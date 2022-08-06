@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>备忘录--MongoDB</h1>
+    <div>
+      <div>创建者：<input id="username"/></div>
+      <div>事件：<input type="text" id="something"/></div>
+      <div>完成所需天数：<input type="number" id="days"/></div>
+      <div><button id="add">添加</button></div>
+    </div>
+    <hr>
+    <div>
+      <button id="update">更新</button>
+      <button id="delete">删除</button>
+    </div>
+    <hr>
+    <table border="1">
+      <thead>
+        <tr>
+          <td>创建者</td>
+          <td>事件</td>
+          <td>完成所需天数</td>
+        </tr>
+      </thead>
+      <tbody>
+
+      </tbody>
+    </table>
+
+
+
+
+
+    <script>
+      var add = document.querySelector("#add")
+      var update = document.querySelector("#update")
+      var deletebutton = document.querySelector("#delete")
+      var username = document.querySelector("#username")
+      var something = document.querySelector("#something")
+      var days = document.querySelector("#days")
+
+      add.onclick = ()=>{
+        console.log(username.value,something.value,days.value)
+        fetch("/api/user/add",{
+          method:"POST",
+          body:JSON.stringify({
+            username: username.value,
+            something: something.value,
+            days: days.value
+          }),
+          headers:{
+            "Content-Type":"application/json"
+          }
+        }).then(res=>res.json()).then(res=>{
+          console.log(res)
+        })
+      }
+
+      update.onclick = ()=>{
+        fetch("/api/user/update/62ed19e728ffc5d8b5b6950e",{
+          method:"POST",
+          body:JSON.stringify({
+            username: "修改的创建者",
+            something: "修改的内容",
+            days: 1
+          }),
+          headers:{
+            "Content-Type":"application/json"
+          }
+        }).then(res=>res.json()).then(res=>{
+          console.log(res)
+        })
+      }
+
+      deletebutton.onclick = ()=>{
+        fetch("/api/user/delete/62ed19e728ffc5d8b5b6950e").then(res=>res.json()).then(res=>{
+          console.log(res)
+        })
+      }
+
+      //获取列表
+      fetch("/api/user/list").then(res=>res.json()).then(res=>{
+        console.log(res)
+        var tbody = document.querySelector("tbody")
+        tbody.innerHTML = res.map(item=>`
+          <tr>
+            <td>${item.username}</td>
+            <td>${item.something}</td>
+            <td>${item.days}</td>
+          </tr>
+        `).join("")
+      })
+    </script>
+  </body>
+</html>
